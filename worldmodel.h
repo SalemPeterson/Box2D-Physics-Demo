@@ -24,6 +24,7 @@ public:
 
 public slots:
     void updateWorld();
+    void createBoundary(float32 x, float32 y, float32 width, float32 height);
     void addBody(float32 x, float32 y, float32 width, float32 height);
     void removeBody(int index);
 

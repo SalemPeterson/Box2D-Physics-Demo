@@ -8,6 +8,7 @@
 #include <QGraphicsProxyWidget>
 #include <vector>
 #include <QDebug>
+#include <cmath>
 
 MainWindow::MainWindow(WorldModel* model, QWidget *parent)
     : QMainWindow{parent}
@@ -19,10 +20,10 @@ MainWindow::MainWindow(WorldModel* model, QWidget *parent)
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
 
-    QWidget *w = new QWidget();
-    w->setStyleSheet(QString("Background-color: rgb(0,255,0)"));
-    w->resize(40000,1);
-    scene->addWidget(w)->setPos(-20000,400);
+    createBoundary(0, 400, 400, 1);
+    createBoundary(0, 0, 400, 1);
+    createBoundary(400, 0, 1, 400);
+    createBoundary(0, 0, 1, 400);
 
     connect(&timer, &QTimer::timeout, model, &WorldModel::updateWorld);
     connect(model, &WorldModel::newObjectData, this, &MainWindow::updateObjects);
@@ -44,9 +45,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::updateObjects(std::vector<WorldModel::ObjectData> objData) {
     for (size_t i = 0; i < objData.size(); i++) {
+        int x_BL = objData[i].x * 100;
+        int y_BL = ui->graphicsView->height() - objData[i].y * 100;
         int w_off = physicsWidgets[i]->preferredWidth() / 2;
         int h_off = physicsWidgets[i]->preferredHeight() / 2;
-        physicsWidgets[i]->setPos(objData[i].x * 100 - w_off, ui->graphicsView->height() - objData[i].y * 100 - h_off);
+        int x = x_BL + w_off * (std::cos(objData[i].angle) + std::cos(objData[i].angle + 1.57079632679));
+        int y = y_BL - h_off * (std::sin(objData[i].angle) + std::sin(objData[i].angle + 1.57079632679));
+
+        physicsWidgets[i]->setPos(x, y);
         physicsWidgets[i]->setRotation(objData[i].angle * 57.2957795131);
     }
 }
@@ -66,3 +72,9 @@ void MainWindow::addPhysicsWidget(int x, int y, int width, int height) {
     emit addObject(x / 100.0f, y / 100.0f, width / 100.0f, height / 100.0f);
 }
 
+void MainWindow::createBoundary(int x, int y, int width, int height) {
+    QWidget *w = new QWidget();
+    w->setStyleSheet(QString("Background-color: rgb(0,255,0)"));
+    w->resize(width,height);
+    scene->addWidget(w)->setPos(x,y);
+}

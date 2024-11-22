@@ -32,6 +32,7 @@ private:
 public slots:
     void updateObjects(std::vector<WorldModel::ObjectData>);
     void addPhysicsWidget(int x, int y, int width, int height);
+    void createBoundary(int x, int y, int width, int height);
 
 signals:
     void updateWorld();

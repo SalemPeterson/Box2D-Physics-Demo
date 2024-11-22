@@ -6,23 +6,10 @@ WorldModel::WorldModel(QObject *parent)
     , world{gravity}
     , bodies{}
 {
-    // Define the ground body.
-    b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(0.0f, -10.0f);
-
-    // Call the body factory which allocates memory for the ground body
-    // from a pool and creates the ground box shape (also from a pool).
-    // The body is also added to the world.
-    b2Body* groundBody = world.CreateBody(&groundBodyDef);
-
-    // Define the ground box shape.
-    b2PolygonShape groundBox;
-
-    // The extents are the half-widths of the box.
-    groundBox.SetAsBox(50.0f, 10.0f);
-
-    // Add the ground fixture to the ground body.
-    groundBody->CreateFixture(&groundBox, 0.0f);
+    createBoundary(0.0f, -10.0f, 100.0f, 20.0f);
+    createBoundary(0.0f, 14.0f, 100.0f, 20.0f);
+    createBoundary(-10.0f, 0.0f, 20.0f, 100.0f);
+    createBoundary(14.0f, 0.0f, 20.0f, 100.0f);
 }
 
 void WorldModel::updateWorld() {
@@ -70,4 +57,24 @@ void WorldModel::addBody(float32 x, float32 y, float32 width, float32 height) {
 
 void WorldModel::removeBody(int index) {
     world.DestroyBody(bodies[index]);
+}
+
+void WorldModel::createBoundary(float32 x, float32 y, float32 width, float32 height) {
+    // Define the ground body.
+    b2BodyDef groundBodyDef;
+    groundBodyDef.position.Set(x, y);
+
+    // Call the body factory which allocates memory for the ground body
+    // from a pool and creates the ground box shape (also from a pool).
+    // The body is also added to the world.
+    b2Body* groundBody = world.CreateBody(&groundBodyDef);
+
+    // Define the ground box shape.
+    b2PolygonShape groundBox;
+
+    // The extents are the half-widths of the box.
+    groundBox.SetAsBox(width / 2, height / 2);
+
+    // Add the ground fixture to the ground body.
+    groundBody->CreateFixture(&groundBox, 0.0f);
 }
