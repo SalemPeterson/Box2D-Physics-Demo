@@ -47,6 +47,10 @@ void MainWindow::addPhysicsWidget(int x, int y, int width, int height) {
     QWidget *w = new QWidget();
     w->setStyleSheet(QString("Background-color: rgb(255,0,0)"));
     w->resize(width,height);
+    QWidget *w2 = new QWidget(w);
+    w2->setStyleSheet(QString("Background-color: rgb(0,255,0)"));
+    w2->resize(10, 10);
+    w2->move(0, height - 10);
     physicsWidgets.push_back(scene->addWidget(w));
     emit addObject(x / 100.0f, y / 100.0f, width / 100.0f, height / 100.0f);
 }
