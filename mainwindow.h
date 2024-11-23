@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "worldmodel.h"
+#include "physicswidget.h"
 #include <QMainWindow>
 #include <QTimer>
 #include <QGraphicsScene>
@@ -28,6 +29,7 @@ private:
     QTimer timer;
     std::vector<QGraphicsProxyWidget*> physicsWidgets;
     QGraphicsScene* scene;
+    bool isPhysicsWidgetPressed;
     void removePhysicsWidget(int index);
     void deleteWidgets();
     void spawnWidgets();
@@ -36,6 +38,8 @@ public slots:
     void updateObjects(std::vector<WorldModel::ObjectData>);
     void addPhysicsWidget(int x, int y, int width, int height);
     void createBoundary(int x, int y, int width, int height);
+    void physicsWidgetPressed(PhysicsWidget* w);
+    void physicsWidgetReleased(PhysicsWidget* w, int x, int y);
 
 signals:
     void updateWorld();

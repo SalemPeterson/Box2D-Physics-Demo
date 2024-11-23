@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "worldmodel.h"
+#include "physicswidget.h"
 #include <QTimer>
 #include <Box2D/Box2D.h>
 #include <stdio.h>
@@ -32,18 +33,18 @@ MainWindow::MainWindow(WorldModel* model, QWidget *parent)
     timer.setTimerType(Qt::PreciseTimer);
     timer.start(1000.0f / 60.0f);
     spawnWidgets();
-    QTimer::singleShot(2000, this, [this]{deleteWidgets();});
+    //QTimer::singleShot(2000, this, [this]{deleteWidgets();});
 }
 
 void MainWindow::spawnWidgets() {
     addPhysicsWidget(200, 100, 50, 50);
-    QTimer::singleShot(500, this, [this]{spawnWidgets();});
+    QTimer::singleShot(1000, this, [this]{spawnWidgets();});
 }
 
 void MainWindow::deleteWidgets() {
     removePhysicsWidget(0);
     if (physicsWidgets.size() > 0) {
-        QTimer::singleShot(1000, this, [this]{deleteWidgets();});
+        QTimer::singleShot(1500, this, [this]{deleteWidgets();});
     }
 }
 
@@ -64,7 +65,9 @@ void MainWindow::updateObjects(std::vector<WorldModel::ObjectData> objData) {
 }
 
 void MainWindow::addPhysicsWidget(int x, int y, int width, int height) {
-    QWidget *w = new QWidget();
+    auto *w = new PhysicsWidget();
+    connect(w, &PhysicsWidget::mousePressed, this, &MainWindow::physicsWidgetPressed);
+    connect(w, &PhysicsWidget::mouseReleased, this, &MainWindow::physicsWidgetReleased);
     w->setStyleSheet(QString("Background-color: rgb(255,0,0)"));
     w->resize(width,height);
     QWidget *w2 = new QWidget(w);
@@ -87,4 +90,22 @@ void MainWindow::createBoundary(int x, int y, int width, int height) {
     w->setStyleSheet(QString("Background-color: rgb(0,255,0)"));
     w->resize(width,height);
     scene->addWidget(w)->setPos(x, y);
+}
+
+void MainWindow::physicsWidgetPressed(PhysicsWidget* w) {
+    auto wp = w->graphicsProxyWidget();
+    for (size_t i = 0; i < physicsWidgets.size(); i++) {
+        if (wp == physicsWidgets[i]) {
+            isPhysicsWidgetPressed = true;
+            removePhysicsWidget(i);
+            return;
+        }
+    }
+}
+
+void MainWindow::physicsWidgetReleased(PhysicsWidget* w, int x, int y) {
+    isPhysicsWidgetPressed = false;
+    auto wp = scene->addWidget(w);
+    physicsWidgets.push_back(wp);
+    emit addObject(x, y, 50, 50);
 }

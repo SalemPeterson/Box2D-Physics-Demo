@@ -46,6 +46,8 @@ release/b2WorldCallbacks.o
 release/b2Rope.o
 release/main.o
 release/mainwindow.o
+release/physicswidget.o
 release/worldmodel.o
 release/moc_mainwindow.o
+release/moc_physicswidget.o
 release/moc_worldmodel.o

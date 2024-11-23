@@ -46,6 +46,8 @@ debug/b2WorldCallbacks.o
 debug/b2Rope.o
 debug/main.o
 debug/mainwindow.o
+debug/physicswidget.o
 debug/worldmodel.o
 debug/moc_mainwindow.o
+debug/moc_physicswidget.o
 debug/moc_worldmodel.o
