@@ -4,7 +4,7 @@
 
 WorldModel::WorldModel(QObject *parent)
     : QObject{parent}
-    , gravity{0.0f, 5.0f}
+    , gravity{0.0f, 15.0f}
     , world{gravity}
     , bodies{}
 {
@@ -50,13 +50,13 @@ void WorldModel::addBody(int x, int y, int width, int height) {
     fixtureDef.shape = &dynamicBox;
 
     // Set the box density to be non-zero, so it will be dynamic.
-    fixtureDef.density = 1.0f;
+    fixtureDef.density = 10.0f;
 
     // Override the default friction.
-    fixtureDef.friction = 0.9f;
+    fixtureDef.friction = 0.1f;
 
     // Override the default restitution.
-    fixtureDef.restitution = 0.3f;
+    fixtureDef.restitution = 1.0f;
 
     // Add the shape to the body.
     body->CreateFixture(&fixtureDef);

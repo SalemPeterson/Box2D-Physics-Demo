@@ -28,6 +28,9 @@ private:
     QTimer timer;
     std::vector<QGraphicsProxyWidget*> physicsWidgets;
     QGraphicsScene* scene;
+    void removePhysicsWidget(int index);
+    void deleteWidgets();
+    void spawnWidgets();
 
 public slots:
     void updateObjects(std::vector<WorldModel::ObjectData>);
@@ -37,5 +40,6 @@ public slots:
 signals:
     void updateWorld();
     void addObject(float32 x, float32 y, float32 width, float32 height);
+    void removeObject(int index);
 };
 #endif // MAINWINDOW_H

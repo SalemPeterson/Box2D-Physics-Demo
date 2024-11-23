@@ -28,11 +28,23 @@ MainWindow::MainWindow(WorldModel* model, QWidget *parent)
     connect(&timer, &QTimer::timeout, model, &WorldModel::updateWorld);
     connect(model, &WorldModel::newObjectData, this, &MainWindow::updateObjects);
     connect(this, &MainWindow::addObject, model, &WorldModel::addBody);
+    connect(this, &MainWindow::removeObject, model, &WorldModel::removeBody);
     timer.setTimerType(Qt::PreciseTimer);
     timer.start(1000.0f / 60.0f);
-    addPhysicsWidget(100, 100, 50, 50);
-    addPhysicsWidget(125, 200, 50, 50);
-    addPhysicsWidget(150, 300, 50, 50);
+    spawnWidgets();
+    QTimer::singleShot(2000, this, [this]{deleteWidgets();});
+}
+
+void MainWindow::spawnWidgets() {
+    addPhysicsWidget(200, 100, 50, 50);
+    QTimer::singleShot(500, this, [this]{spawnWidgets();});
+}
+
+void MainWindow::deleteWidgets() {
+    removePhysicsWidget(0);
+    if (physicsWidgets.size() > 0) {
+        QTimer::singleShot(1000, this, [this]{deleteWidgets();});
+    }
 }
 
 MainWindow::~MainWindow()
@@ -62,6 +74,12 @@ void MainWindow::addPhysicsWidget(int x, int y, int width, int height) {
     auto wp = scene->addWidget(w);
     physicsWidgets.push_back(wp);
     emit addObject(x, y, width, height);
+}
+
+void MainWindow::removePhysicsWidget(int index) {
+    scene->removeItem(physicsWidgets[index]);
+    physicsWidgets.erase(physicsWidgets.begin() + index);
+    emit removeObject(index);
 }
 
 void MainWindow::createBoundary(int x, int y, int width, int height) {
