@@ -30,8 +30,9 @@ MainWindow::MainWindow(WorldModel* model, QWidget *parent)
     connect(this, &MainWindow::addObject, model, &WorldModel::addBody);
     timer.setTimerType(Qt::PreciseTimer);
     timer.start(1000.0f / 60.0f);
-    addPhysicsWidget(100, 300, 70, 70);
-    addPhysicsWidget(150, 400, 50, 50);
+    addPhysicsWidget(100, 100, 50, 50);
+    addPhysicsWidget(125, 200, 50, 50);
+    addPhysicsWidget(150, 300, 50, 50);
 }
 
 MainWindow::~MainWindow()
@@ -46,10 +47,10 @@ MainWindow::~MainWindow()
 void MainWindow::updateObjects(std::vector<WorldModel::ObjectData> objData) {
     for (size_t i = 0; i < objData.size(); i++) {
         int x_BL = objData[i].x * 100;
-        int y_BL = ui->graphicsView->height() - objData[i].y * 100;
+        int y_BL = objData[i].y * 100;
         int w_off = physicsWidgets[i]->preferredWidth() / 2;
         int h_off = physicsWidgets[i]->preferredHeight() / 2;
-        int x = x_BL + w_off * (std::cos(objData[i].angle) + std::cos(objData[i].angle + 1.57079632679));
+        int x = x_BL - w_off * (std::cos(objData[i].angle) + std::cos(objData[i].angle + 1.57079632679));
         int y = y_BL - h_off * (std::sin(objData[i].angle) + std::sin(objData[i].angle + 1.57079632679));
 
         physicsWidgets[i]->setPos(x, y);

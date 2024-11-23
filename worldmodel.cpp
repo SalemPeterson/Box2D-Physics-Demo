@@ -2,7 +2,7 @@
 
 WorldModel::WorldModel(QObject *parent)
     : QObject{parent}
-    , gravity{0.0f, -5.0f}
+    , gravity{0.0f, 5.0f}
     , world{gravity}
     , bodies{}
 {
@@ -47,7 +47,7 @@ void WorldModel::addBody(float32 x, float32 y, float32 width, float32 height) {
     fixtureDef.friction = 0.9f;
 
     // Override the default restitution.
-    fixtureDef.restitution = 0.9f;
+    fixtureDef.restitution = 0.3f;
 
     // Add the shape to the body.
     body->CreateFixture(&fixtureDef);
