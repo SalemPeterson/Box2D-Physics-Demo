@@ -46,15 +46,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::updateObjects(std::vector<WorldModel::ObjectData> objData) {
     for (size_t i = 0; i < objData.size(); i++) {
-        int x_BL = objData[i].x * 100;
-        int y_BL = objData[i].y * 100;
-        int w_off = physicsWidgets[i]->preferredWidth() / 2;
-        int h_off = physicsWidgets[i]->preferredHeight() / 2;
-        int x = x_BL - w_off * (std::cos(objData[i].angle) + std::cos(objData[i].angle + 1.57079632679));
-        int y = y_BL - h_off * (std::sin(objData[i].angle) + std::sin(objData[i].angle + 1.57079632679));
-
-        physicsWidgets[i]->setPos(x, y);
-        physicsWidgets[i]->setRotation(objData[i].angle * 57.2957795131);
+        physicsWidgets[i]->setPos(objData[i].x, objData[i].y);
+        physicsWidgets[i]->setRotation(objData[i].angle);
     }
 }
 
@@ -67,15 +60,13 @@ void MainWindow::addPhysicsWidget(int x, int y, int width, int height) {
     w2->resize(10, 10);
     w2->move(0, height - 10);
     auto wp = scene->addWidget(w);
-    wp->setPreferredWidth(width);
-    wp->setPreferredHeight(height);
     physicsWidgets.push_back(wp);
-    emit addObject(x / 100.0f, y / 100.0f, width / 100.0f, height / 100.0f);
+    emit addObject(x, y, width, height);
 }
 
 void MainWindow::createBoundary(int x, int y, int width, int height) {
     QWidget *w = new QWidget();
     w->setStyleSheet(QString("Background-color: rgb(0,255,0)"));
     w->resize(width,height);
-    scene->addWidget(w)->setPos(x,y);
+    scene->addWidget(w)->setPos(x, y);
 }

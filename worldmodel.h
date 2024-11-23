@@ -12,20 +12,28 @@ class WorldModel : public QObject
     float32 timeStep = 1.0f / 60.0f;
     int32 velocityIterations = 6;
     int32 positionIterations = 2;
+    float32 scale = 100.0f;
     b2Vec2 gravity;
     b2World world;
-    std::vector<b2Body*> bodies;
+    struct BodyData {
+        b2Body* body;
+        int width, height;
+    };
+
+    std::vector<BodyData> bodies;
+
+    void createBoundary(float32 x, float32 y, float32 width, float32 height);
 
 public:
     explicit WorldModel(QObject *parent = nullptr);
     struct ObjectData {
-        float32 x, y, angle;
+        int x, y;
+        float32 angle;
     };
 
 public slots:
     void updateWorld();
-    void createBoundary(float32 x, float32 y, float32 width, float32 height);
-    void addBody(float32 x, float32 y, float32 width, float32 height);
+    void addBody(int x, int y, int width, int height);
     void removeBody(int index);
 
 signals:

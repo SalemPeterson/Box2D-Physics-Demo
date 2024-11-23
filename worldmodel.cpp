@@ -1,4 +1,6 @@
 #include "worldmodel.h"
+#include <vector>
+#include <cmath>
 
 WorldModel::WorldModel(QObject *parent)
     : QObject{parent}
@@ -19,22 +21,29 @@ void WorldModel::updateWorld() {
 
     std::vector<ObjectData> bodyData{};
     for (auto body : bodies) {
-        auto pos = body->GetPosition();
-        bodyData.push_back(ObjectData{pos.x, pos.y, body->GetAngle()});
+        auto pos = body.body->GetPosition();
+        auto angle = body.body->GetAngle();
+        int xBL = pos.x * 100.0f;
+        int yBL = pos.y * 100.0f;
+        int wOff = body.width / 2.0f;
+        int hOff = body.height / 2.0f;
+        int xMid = xBL - wOff * (std::cos(angle) + std::cos(angle + 1.57079632679f));
+        int yMid = yBL - hOff * (std::sin(angle) + std::sin(angle + 1.57079632679f));
+        bodyData.push_back(ObjectData{xMid, yMid, angle * 57.2957795131f});
     }
     emit newObjectData(bodyData);
 }
 
-void WorldModel::addBody(float32 x, float32 y, float32 width, float32 height) {
+void WorldModel::addBody(int x, int y, int width, int height) {
     // Define the dynamic body. We set its position and call the body factory.
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(x, y);
+    bodyDef.position.Set(x / scale, y /scale);
     b2Body* body = world.CreateBody(&bodyDef);
 
     // Define another box shape for our dynamic body.
     b2PolygonShape dynamicBox;
-    dynamicBox.SetAsBox(width / 2, height / 2);
+    dynamicBox.SetAsBox(width / (2.0f * scale), height / (2.0f * scale));
 
     // Define the dynamic body fixture.
     b2FixtureDef fixtureDef;
@@ -52,11 +61,12 @@ void WorldModel::addBody(float32 x, float32 y, float32 width, float32 height) {
     // Add the shape to the body.
     body->CreateFixture(&fixtureDef);
 
-    bodies.push_back(body);
+    bodies.push_back(BodyData{body, width, height});
 }
 
 void WorldModel::removeBody(int index) {
-    world.DestroyBody(bodies[index]);
+    world.DestroyBody(bodies[index].body);
+    bodies.erase(bodies.begin() + index);
 }
 
 void WorldModel::createBoundary(float32 x, float32 y, float32 width, float32 height) {
@@ -73,7 +83,7 @@ void WorldModel::createBoundary(float32 x, float32 y, float32 width, float32 hei
     b2PolygonShape groundBox;
 
     // The extents are the half-widths of the box.
-    groundBox.SetAsBox(width / 2, height / 2);
+    groundBox.SetAsBox(width / 2.0f, height / 2.0f);
 
     // Add the ground fixture to the ground body.
     groundBody->CreateFixture(&groundBox, 0.0f);
